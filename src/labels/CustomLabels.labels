@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>ParentsAlreadyJoint</fullName>
+        <categories>SObject</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Parents already joint.</shortDescription>
+        <value>Specified parent objects are already joint by junction object.</value>
+    </labels>
+</CustomLabels>
