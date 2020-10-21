@@ -70,7 +70,7 @@ public with sharing class SobjectUtils {
 	* Checks if junction objects to be saved in database do not form multiple junctions between same parents.
 	* Otherwise, adds errors to offending records.
 	* To be used on after insert and after undelete trigger events, and, in case of reparentable junction object, on after update.
-	* Relies on the fact that on after trigger event new records are already in database and can be queries together with old records.
+	* Relies on the fact that on after trigger event new records are already in database and can be queried together with old records.
 	* An alternative to relying on unique field that concatenates parents' IDs.
 	* Order of given parent fields does not matter.
 	*
@@ -129,10 +129,10 @@ public with sharing class SobjectUtils {
 	) {
 		final String query = 'SELECT COUNT(Id), ' + parentField1Name + ', ' + parentField2Name +
 			' FROM ' + junctionObjName +
+			' WHERE ' + parentField1Name + ' IN :parent1Ids' +
+			' AND ' + parentField2Name + ' IN :parent2Ids' +
 			' GROUP BY ' + parentField1Name + ', ' + parentField2Name +
-			' HAVING COUNT(Id) > 1' +
-			' AND ' + parentField1Name + ' IN :parent1Ids' +
-			' AND ' + parentField2Name + ' IN :parent2Ids'
+			' HAVING COUNT(Id) > 1'
 		;
 		return Database.query(query);
 	}
@@ -223,12 +223,10 @@ public with sharing class SobjectUtils {
 	) {
 		for (SObject child : records) {
 			final Id parentId = (Id) child.get(childParentField);
-			if (!parentIdToValueDelta.containsKey(parentId)) {
-				parentIdToValueDelta.put(parentId, 0);
-			}
+			final Decimal previousValue = parentIdToValueDelta.containsKey(parentId) ? parentIdToValueDelta.get(parentId) : 0;
 			parentIdToValueDelta.put(
 				parentId,
-				parentIdToValueDelta.get(parentId) + multiplier * (Decimal) child.get(childValueField)
+				previousValue + multiplier * (Decimal) child.get(childValueField)
 			);
 		}
 	}
